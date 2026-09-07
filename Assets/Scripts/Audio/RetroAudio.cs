@@ -106,8 +106,10 @@ namespace SpaceInvaders
 
         private static void EnsurePool()
         {
-            if (_pool != null) return;
+            if (_pool != null && _pool.Length > 0 && _pool[0] != null) return;
+
             var go = new GameObject("RetroAudioService");
+            Object.DontDestroyOnLoad(go);
             _pool = new AudioSource[6];
             for (int i = 0; i < _pool.Length; i++)
             {
@@ -116,6 +118,7 @@ namespace SpaceInvaders
                 src.spatialBlend = 0f;
                 _pool[i] = src;
             }
+            _poolIndex = 0;
         }
 
         private static void PlayOneShot(AudioClip clip, float volume = 1f)
