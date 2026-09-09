@@ -37,6 +37,9 @@ namespace SpaceInvaders
             sr.sprite = sprite;
             sr.sortingOrder = 5;
             bullet._sr = sr;
+            // Registered here, not in OnEnable: AddComponent fires OnEnable before
+            // owner is assigned, which filed alien shots as the player's.
+            (owner == Owner.Player ? PlayerBullets : AlienBullets).Add(bullet);
             return bullet;
         }
 
@@ -46,14 +49,10 @@ namespace SpaceInvaders
             _frameTime = frameTime;
         }
 
-        private void OnEnable()
+        private void OnDestroy()
         {
-            (owner == Owner.Player ? PlayerBullets : AlienBullets).Add(this);
-        }
-
-        private void OnDisable()
-        {
-            (owner == Owner.Player ? PlayerBullets : AlienBullets).Remove(this);
+            PlayerBullets.Remove(this);
+            AlienBullets.Remove(this);
         }
 
         private void Update()
