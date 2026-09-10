@@ -255,16 +255,30 @@ namespace SpaceInvaders
 
                 if (!consumed && formation != null)
                 {
+                    // A bullet's box can span two stacked rows at once (row spacing
+                    // leaves less gap than the bullet is tall), so pick whichever
+                    // intersecting alien it actually reached first instead of just
+                    // the first one found scanning top-to-bottom - otherwise a shot
+                    // can kill the alien behind the one it was aimed at.
+                    Alien closestAlien = null;
+                    float closestDist = float.MaxValue;
                     foreach (var alien in formation.AliveAliens())
                     {
-                        if (bb.Intersects(alien.WorldBounds))
+                        if (!bb.Intersects(alien.WorldBounds)) continue;
+                        float dist = Mathf.Abs(alien.transform.position.y - b.transform.position.y);
+                        if (dist < closestDist)
                         {
-                            formation.Kill(alien);
-                            AddScore(alien.scoreValue, alien.transform.position);
-                            RetroAudio.PlayExplosion();
-                            consumed = true;
-                            break;
+                            closestDist = dist;
+                            closestAlien = alien;
                         }
+                    }
+
+                    if (closestAlien != null)
+                    {
+                        formation.Kill(closestAlien);
+                        AddScore(closestAlien.scoreValue, closestAlien.transform.position);
+                        RetroAudio.PlayExplosion();
+                        consumed = true;
                     }
                 }
 

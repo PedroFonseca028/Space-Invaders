@@ -93,6 +93,10 @@ namespace SpaceInvaders
             return FromRows(name, fullRows, palette);
         }
 
+        // A Sprite[] stays non-null after the sprites inside it are destroyed,
+        // unlike a lone Sprite field - so check the contents, not the array.
+        private static bool NeedsRebuild(Sprite[] cache) => cache == null || cache.Length == 0 || cache[0] == null;
+
         private static readonly Color32 EyeColor = new Color32(255, 240, 90, 255);
 
         // ---------------------------------------------------------------
@@ -113,21 +117,21 @@ namespace SpaceInvaders
             switch (type)
             {
                 case 1:
-                    if (_alien1 == null)
+                    if (NeedsRebuild(_alien1))
                     {
                         var p = new Dictionary<char, Color32> { { 'X', new Color32(64, 220, 120, 255) }, { 'E', EyeColor } };
                         _alien1 = new[] { Build("Alien1_A", CrawlerA, p), Build("Alien1_B", CrawlerB, p) };
                     }
                     return _alien1;
                 case 2:
-                    if (_alien2 == null)
+                    if (NeedsRebuild(_alien2))
                     {
                         var p = new Dictionary<char, Color32> { { 'X', new Color32(80, 190, 255, 255) }, { 'E', EyeColor } };
                         _alien2 = new[] { Build("Alien2_A", DrifterA, p), Build("Alien2_B", DrifterB, p) };
                     }
                     return _alien2;
                 default:
-                    if (_alien3 == null)
+                    if (NeedsRebuild(_alien3))
                     {
                         var p = new Dictionary<char, Color32> { { 'X', new Color32(220, 90, 230, 255) }, { 'E', EyeColor } };
                         _alien3 = new[] { Build("Alien3_A", SentinelA, p), Build("Alien3_B", SentinelB, p) };
@@ -146,7 +150,7 @@ namespace SpaceInvaders
         private static Sprite[] _boss;
         public static Sprite[] GetBossFrames()
         {
-            if (_boss == null)
+            if (NeedsRebuild(_boss))
             {
                 var p = new Dictionary<char, Color32> { { 'X', new Color32(255, 185, 60, 255) } };
                 _boss = new[] { Build("Boss_A", BossA, p), Build("Boss_B", BossB, p) };
@@ -198,7 +202,7 @@ namespace SpaceInvaders
         private static Sprite[] _alienBullet;
         public static Sprite[] GetAlienBulletFrames()
         {
-            if (_alienBullet == null)
+            if (NeedsRebuild(_alienBullet))
             {
                 var p = new Dictionary<char, Color32> { { 'X', new Color32(255, 80, 70, 255) } };
                 _alienBullet = new[]
@@ -220,7 +224,7 @@ namespace SpaceInvaders
         private static Sprite[] _explosion;
         public static Sprite[] GetExplosionFrames()
         {
-            if (_explosion == null)
+            if (NeedsRebuild(_explosion))
             {
                 var flashP = new Dictionary<char, Color32> { { 'X', new Color32(255, 230, 120, 255) } };
                 var sparkP = new Dictionary<char, Color32> { { 'X', new Color32(230, 110, 30, 255) } };
